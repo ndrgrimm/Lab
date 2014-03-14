@@ -16,6 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * @brief  angoloS
+ * @author Andrea Grimaldi <andrea.grimaldi.1@studenti.unipd.it>
+ * @version 0.1
+ *
+ */
 
 #ifndef ANGOLOS_H
 #define ANGOLOS_H
