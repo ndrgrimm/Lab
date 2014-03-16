@@ -105,6 +105,19 @@ angoloS::angoloS(const angoloS& other)
 }
 
 
+angoloS* ReadP(std::istream& is)
+{
+  if ( !( is.good() ) ) return 0;
+  
+  int gradi=0;
+  int primi=0;
+  
+  if (! ( is >> gradi ) ) return 0;
+  is >> primi;
+  
+  return new angoloS(gradi,primi);
+  
+}
 
 
 

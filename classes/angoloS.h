@@ -39,7 +39,8 @@ public:
   
 
   //ritorna il converte l'angolo i radianti
-  double GetRad();  
+  double GetRad();
+
   
   //Operatori generici
   angoloS& operator*( double sx);
@@ -59,7 +60,8 @@ private:
   angoloS(const angoloS& other);
 };
 
-  
+  // Altre funzioni da sistemare da qualche parte
+  angoloS* ReadP(istream& is);
 
 
 #endif // ANGOLOS_H
