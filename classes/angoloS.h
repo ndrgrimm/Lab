@@ -32,7 +32,9 @@ class angoloS
   
 friend
   std::ostream& operator<<( std::ostream& os, angoloS& other);
-
+friend
+  std::ostream& operator<<( std::ostream& os, angoloS* other);
+  
 public:
   angoloS(int Xgradi, int Xprimi = 0, double Xsecondi = 0.);
   virtual ~angoloS();
@@ -48,6 +50,7 @@ public:
   angoloS& operator*( int sx);
   angoloS& operator/( int sx );
   angoloS& operator+( angoloS& sx);
+  angoloS& operator-( angoloS& sx);
   angoloS& operator=(const angoloS& other){ this->secondi=other.secondi; return *this;};
 
 
@@ -61,7 +64,7 @@ private:
 };
 
   // Altre funzioni da sistemare da qualche parte
-  angoloS* ReadP(istream& is);
+  angoloS* ReadP(std::istream& is);
 
 
 #endif // ANGOLOS_H

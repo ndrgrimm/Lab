@@ -41,7 +41,7 @@ angoloS::~angoloS()
 
 double angoloS::GetRad()
 {
-return secondi/648000*M_PI;
+return (secondi/648000)*M_PI;
 }
 
 
@@ -85,6 +85,13 @@ angoloS& angoloS::operator+(angoloS& sx)
 }
 
 
+angoloS& angoloS::operator-(angoloS& sx)
+{
+ int secondiTmp=secondi-sx.secondi;
+  return *(new angoloS(0,0,secondiTmp));
+}
+
+
 std::ostream& operator<<(std::ostream& os, angoloS& other)
 {
   
@@ -93,7 +100,13 @@ std::ostream& operator<<(std::ostream& os, angoloS& other)
     return os;
 }
 
-
+std::ostream& operator<<(std::ostream& os, angoloS* other)
+{
+  
+  int secondiTmp = other->secondi;
+    os << secondiTmp/3600 << "°" << ( secondiTmp/60 )%60 << '\''<< secondiTmp%60 + (other->secondi - secondiTmp ) << "\'\'";
+    return os;
+}
 
 
 
