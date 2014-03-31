@@ -11,8 +11,8 @@
 
 #include "TGraphErrors.h"
 #include "TFile.h"
+#include <TF1.h>
 #include <string>
-#include <cmath>
 #include <string.h>
 using namespace std;
 
@@ -29,6 +29,8 @@ int main( int argc, char**argv ){
   TFile * fileRoot = new TFile( nameFileRoot.c_str(), optFileroot.c_str() );
   
   TGraphErrors * Plot;
+  TF1 * Line_prot=new TF1("prot","pol2");
+  TF1 * Line;
   
   
   //dichiaro i puntatori per i cicli
@@ -58,53 +60,73 @@ int main( int argc, char**argv ){
   ifstream dataIn;
   int numPoint;
   
-  for (unsigned int n = 2; n < argc; ++n){
-    
+  for (unsigned int n=2; n<argc; ++n){
+   
     //apro il file su cui lavoro
     dataIn.open( argv[ n ] );
-    Plot=new TGraphErrors();
+    cout << "Inizio Analisi del file " << argv [ n ] << '.' << endl;
     
+    //Preparo gli oggetti che mi servono
+    Plot=new TGraphErrors();
+    numPoint=0;
+    
+    //Do il nome alle cose
+    //plot
+    string PlotName=argv[ n ];
+    PlotName.substr( 0, PlotName.find('.') );
+    Plot->SetNameTitle(PlotName.c_str(), PlotName.c_str() );
+    Plot->SetPointError( numPoint++, Errore.GetRad()/sqrt(3.), Errore.GetRad()*(sqrt ( 2./3.) ) );
+    //Curva
+    string LineName="pol_";
+    LineName=LineName+PlotName;
+    Line=new TF1(LineName.c_str(), "pol2");
    
-    string PlotName =argv[ n ];
-    PlotName=PlotName.substr(0,PlotName.find('.'));
-   
-    Plot->SetNameTitle(PlotName.c_str() , PlotName.c_str() );
+    
+    //Leggo il primo dato
     thetaZero = ReadMisuraP(dataIn);
     alfaZero  = ReadMisuraP(dataIn);
     
     
+    // analizzo il primo dato
     dAlfaPunto= &(*alfaZero - *thetaZero);
-    numPoint=0;
-    Plot->SetPoint( numPoint, 0, -dAlfaPunto->GetRad() );
-    Plot->SetPointError( numPoint++, Errore.GetRad()/sqrt(3.), Errore.GetRad()*(sqrt ( 2./3.) ) );
     
+    // Lo inseriso nel TGraphErrors
+    Plot->SetPoint( numPoint++, 0, -( dAlfaPunto->GetRad() ) );
+
+    //analizzo gli altri considerando la prima misura come zero
     while ( ( thetaMisura=ReadMisuraP(dataIn) ) != 0 ){
       
       thetaPunto = &(*thetaMisura - *thetaZero );
       alfaMisura=ReadMisuraP(dataIn);
       dAlfaPunto= &(*alfaMisura - *thetaMisura);
-      cout << numPoint << ' '<< thetaPunto << ' ' << dAlfaPunto <<endl;
-      Plot->SetPoint( numPoint, thetaPunto->GetRad(), -dAlfaPunto->GetRad() );
-      Plot->SetPointError( numPoint++, Errore.GetRad()/sqrt(3.), Errore.GetRad()*(sqrt ( 2./3.) ) );
-      
+
+      Plot->SetPoint( numPoint++, thetaPunto->GetRad(), -dAlfaPunto->GetRad() );
     }
+   
+   
+    Plot->Fit(Line);
     
-    Plot->Print();
+    //Salvo le cose root in argv[ 1 ].root
+    Line->Write();
     Plot->Write();
-    delete Plot;
-    dataIn.close();
-    
+
+   cout << "Fine dell'analisi.\n\n"<<endl;
+   //pulizia di ciclo
+   dataIn.close();
+   delete Plot;
+   delete Line;
   }
-  fileRoot->Close();
+ 
+  //pulizia finale
   delete thetaMisura;
   delete alfaMisura;
   delete dAlfaPunto;
-  delete thetaPunto; 
-  
+  delete thetaPunto;
+  delete Plot;
+  fileRoot->Close();
   delete fileRoot;
   current->cd();
-  
-  
+  dataIn.close();
 
   return 0;
 }
